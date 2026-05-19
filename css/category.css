@@ -1,0 +1,94 @@
+/* =========================================================================
+   Quash — Category Page Styles
+   ========================================================================= */
+
+/* Category hero / page header */
+.cat-hero {
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-12);
+  background: linear-gradient(180deg, #FAFAF7 0%, #FFFFFF 100%);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+  margin-bottom: var(--space-8);
+}
+.breadcrumb a {
+  color: var(--color-text-soft);
+  transition: color var(--t-base) var(--ease);
+}
+.breadcrumb a:hover { color: var(--color-sage-deep); }
+.breadcrumb__sep { color: var(--color-border); }
+.breadcrumb__current { color: var(--color-text); }
+
+.cat-hero__head {
+  text-align: center;
+  max-width: 60ch;
+  margin: 0 auto;
+}
+.cat-hero__title {
+  font-size: var(--fs-display);
+  font-weight: 500;
+  line-height: 1.05;
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.01em;
+}
+.cat-hero__subtitle {
+  font-size: var(--fs-lg);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+/* Load more */
+.loadmore-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-12);
+}
+.loadmore-status {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+}
+
+/* Inquiry strip */
+.inquiry-strip {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: center;
+  text-align: center;
+}
+.inquiry-strip__title {
+  font-size: var(--fs-h2);
+  margin-bottom: var(--space-2);
+}
+.inquiry-strip__text {
+  color: var(--color-text-muted);
+  font-size: var(--fs-lg);
+}
+.inquiry-strip__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .inquiry-strip {
+    grid-template-columns: 1.4fr auto;
+    gap: var(--space-10);
+    text-align: left;
+  }
+  .inquiry-strip__actions { justify-content: flex-end; }
+}

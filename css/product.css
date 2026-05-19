@@ -1,0 +1,185 @@
+/* =========================================================================
+   Quash — Product Detail Page Styles
+   ========================================================================= */
+
+/* Breadcrumb shared from category styles — duplicate definitions for safety
+   (so product.html doesn't need to also load category.css). */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+  margin-bottom: var(--space-8);
+}
+.breadcrumb a {
+  color: var(--color-text-soft);
+  transition: color var(--t-base) var(--ease);
+}
+.breadcrumb a:hover { color: var(--color-sage-deep); }
+.breadcrumb__sep { color: var(--color-border); }
+.breadcrumb__current { color: var(--color-text); }
+
+/* ---- Product detail layout ---------------------------------------------- */
+.product-detail {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  align-items: start;
+}
+
+/* Gallery */
+.product-detail__gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.product-detail__image {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--color-bg-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+}
+.product-detail__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-detail__image--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #EEF2EA 0%, #FAFAF7 100%);
+  color: var(--color-sage-deep);
+  font-family: var(--font-serif);
+  font-size: 4rem;
+  letter-spacing: 0.08em;
+  font-style: italic;
+}
+
+/* Info column */
+.product-detail__info {
+  display: flex;
+  flex-direction: column;
+}
+.product-detail__category {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--color-sage-deep);
+  margin-bottom: var(--space-4);
+}
+.product-detail__name {
+  font-size: clamp(1.85rem, 3vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.1;
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.01em;
+}
+.product-detail__code {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+}
+.product-detail__description {
+  font-size: var(--fs-lg);
+  line-height: 1.8;
+  color: var(--color-text);
+  margin-bottom: var(--space-10);
+  white-space: pre-line;
+}
+.product-detail__description p { color: inherit; }
+
+.product-detail__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.product-detail__note {
+  margin-top: var(--space-5);
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+.product-detail__note strong {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* ---- Not-found state ---------------------------------------------------- */
+.product-notfound {
+  text-align: center;
+  padding: var(--space-16) var(--space-4);
+}
+.product-notfound h2 { margin-bottom: var(--space-3); }
+.product-notfound p { margin-bottom: var(--space-6); color: var(--color-text-muted); }
+
+/* ---- Sticky mobile CTA bar --------------------------------------------- */
+.sticky-cta {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: 0;
+  z-index: 95;
+  background: #fff;
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
+}
+
+/* When sticky CTA is visible (mobile), hide the floating WhatsApp */
+.fab-whatsapp--desktop { /* default visible */ }
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .product-detail {
+    grid-template-columns: 1.05fr 1fr;
+    gap: var(--space-12);
+  }
+  .product-detail__gallery--double {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .product-detail {
+    gap: var(--space-16);
+  }
+  .product-detail__info {
+    padding-top: var(--space-3);
+  }
+  .product-detail__actions {
+    flex-direction: row;
+    gap: var(--space-4);
+  }
+  .product-detail__actions .btn { flex: 1; }
+
+  /* On desktop, hide sticky bar; show FAB instead */
+  .sticky-cta { display: none !important; }
+}
+
+/* Mobile: hide desktop FAB to avoid stacking with sticky bar */
+@media (max-width: 1023px) {
+  body.has-sticky-cta .fab-whatsapp--desktop { display: none; }
+  /* Add room at the bottom so sticky bar doesn't cover footer text */
+  body.has-sticky-cta .footer { padding-bottom: calc(var(--space-8) + 80px); }
+}
