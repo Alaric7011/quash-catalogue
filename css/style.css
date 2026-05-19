@@ -244,8 +244,9 @@ p { color: var(--color-text-muted); }
   gap: var(--space-3);
 }
 .nav__logo {
-  height: 36px;
+  height: 45px;
   width: auto;
+  display: block;
 }
 .nav__brand-name {
   font-family: var(--font-serif);
