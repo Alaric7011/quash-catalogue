@@ -92,7 +92,21 @@
     try {
       const cats = await Data.getCategories();
       if (cats && cats.length) {
-        grid.innerHTML = cats.map(categoryTileHTML).join("");
+        // Merge live Sheet data with the static config. Sheet wins on every
+        // field EXCEPT when its value is blank — then we keep what's in
+        // config.js. This lets you fill image URLs in either place.
+        const byStaticSlug = {};
+        (CONFIG.CATEGORIES || []).forEach(c => { byStaticSlug[c.slug] = c; });
+        const merged = cats.map(c => {
+          const fallback = byStaticSlug[c.slug] || {};
+          return {
+            slug:  c.slug,
+            name:  c.name  || fallback.name  || c.slug,
+            image: c.image || fallback.image || "",
+            order: c.order
+          };
+        });
+        grid.innerHTML = merged.map(categoryTileHTML).join("");
       }
     } catch (err) { /* keep fallback render */ }
   }
