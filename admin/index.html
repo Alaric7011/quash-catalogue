@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quash Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+</head>
+<body>
+
+  <!-- ============== LOGIN VIEW ============== -->
+  <div class="login-screen" id="view-login">
+    <form class="login-card" id="login-form" autocomplete="off">
+      <h1>QUASH</h1>
+      <p>Admin panel · enter your password to continue.</p>
+
+      <div class="field">
+        <label class="field__label" for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          class="input"
+          autocomplete="current-password"
+          inputmode="text"
+          required
+        />
+        <div class="login-error" id="login-error" aria-live="polite"></div>
+      </div>
+
+      <button type="submit" class="btn btn--primary" id="login-submit">Sign In</button>
+    </form>
+  </div>
+
+  <!-- ============== DASHBOARD VIEW ============== -->
+  <div class="shell is-hidden" id="view-dashboard">
+    <header class="admin-nav">
+      <div class="admin-nav__brand">
+        <span class="admin-nav__brand-name">QUASH</span>
+        <span class="admin-nav__tag">Admin</span>
+      </div>
+      <button class="admin-nav__logout" id="logout-btn">Sign Out</button>
+    </header>
+
+    <main class="admin-main">
+      <div class="page-head">
+        <h1>Manage Catalogue</h1>
+        <p>Add or edit products. Categories can be managed in a future update.</p>
+      </div>
+
+      <div class="action-grid">
+        <a href="add-item.html" class="action-card">
+          <span>
+            <span class="action-card__title">Add Item</span>
+            <small class="action-card__desc">Create a new product with images.</small>
+          </span>
+          <span class="action-card__arrow">→</span>
+        </a>
+
+        <a href="edit-item.html" class="action-card">
+          <span>
+            <span class="action-card__title">Edit Item</span>
+            <small class="action-card__desc">Find and update an existing product.</small>
+          </span>
+          <span class="action-card__arrow">→</span>
+        </a>
+
+        <button type="button" class="action-card action-card--muted" data-stub="Add Category">
+          <span>
+            <span class="action-card__title">Add Category
+              <span class="action-card__chip">Coming Soon</span>
+            </span>
+            <small class="action-card__desc">Create a new collection.</small>
+          </span>
+          <span class="action-card__arrow">→</span>
+        </button>
+
+        <button type="button" class="action-card action-card--muted" data-stub="Edit Category">
+          <span>
+            <span class="action-card__title">Edit Category
+              <span class="action-card__chip">Coming Soon</span>
+            </span>
+            <small class="action-card__desc">Rename or reorder collections.</small>
+          </span>
+          <span class="action-card__arrow">→</span>
+        </button>
+
+        <button type="button" class="action-card action-card--muted" data-stub="Delete Category">
+          <span>
+            <span class="action-card__title">Delete Category
+              <span class="action-card__chip">Coming Soon</span>
+            </span>
+            <small class="action-card__desc">Remove an unused collection.</small>
+          </span>
+          <span class="action-card__arrow">→</span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@ Premium static catalogue site for **Quash**, a wholesale women's sandals busines
 - `index.html` — Home (hero, featured, categories, about, testimonials, contact)
 - `category.html?cat=<slug>` — Lists products for a category (20 per page, Load More)
 - `product.html?id=<code>` — Single product detail with WhatsApp + Call CTAs
+- `admin/` — Password-gated admin panel for adding & editing products (see `admin/apps-script/README.md`)
 
 Products and contact info come from a published Google Sheet (CSV). The owner edits the Sheet; the website reflects the change on next page load.
 
