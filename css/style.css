@@ -456,7 +456,10 @@ p { color: var(--color-text-muted); }
 .product-card__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* `contain` keeps the whole product visible inside the 4:5 frame,
+     even when the source image isn't 4:5. The frame's bg-soft fill
+     becomes a subtle letterbox on whichever side is shorter. */
+  object-fit: contain;
   transition: opacity var(--t-base) var(--ease);
 }
 .product-card__img--placeholder {
