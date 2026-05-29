@@ -20,12 +20,23 @@
 
   // ---------- Populate categories -----------------------------------------
   const select = $("#category");
-  (CONFIG.CATEGORIES || []).forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c.slug;
-    opt.textContent = c.name;
-    select.appendChild(opt);
-  });
+  function appendOptions(list) {
+    list.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.slug;
+      opt.textContent = c.name;
+      select.appendChild(opt);
+    });
+  }
+  // First paint from the static fallback so the dropdown isn't empty.
+  appendOptions(CONFIG.CATEGORIES || []);
+  // Then upgrade to the live list from the Sheet (replaces previous options).
+  Data.getCategories().then(cats => {
+    if (!cats || !cats.length) return;
+    // Keep the placeholder, replace the rest
+    while (select.options.length > 1) select.remove(1);
+    appendOptions(cats);
+  }).catch(() => { /* keep fallback options */ });
 
   // ---------- Preview next code -------------------------------------------
   (async () => {

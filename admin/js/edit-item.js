@@ -154,20 +154,29 @@
   $("#search-input").addEventListener("input", renderResults);
 
   // ---------- Populate category dropdowns --------------------------------
-  function populateCategoryOptions(select, withBlank, blankText) {
+  function populateCategoryOptions(select, list, withBlank, blankText) {
+    // Clear existing options (preserve nothing — caller decides via withBlank).
+    select.innerHTML = "";
     if (withBlank) {
       const o = document.createElement("option");
       o.value = ""; o.disabled = true; o.selected = true; o.textContent = blankText || "Choose…";
       select.appendChild(o);
     }
-    (CONFIG.CATEGORIES || []).forEach(c => {
+    list.forEach(c => {
       const o = document.createElement("option");
       o.value = c.slug; o.textContent = c.name;
       select.appendChild(o);
     });
   }
-  populateCategoryOptions($("#browse-category"), true, "Select a category…");
-  populateCategoryOptions($("#edit-category"), false);
+  // First paint from the static fallback
+  populateCategoryOptions($("#browse-category"), CONFIG.CATEGORIES || [], true, "Select a category…");
+  populateCategoryOptions($("#edit-category"), CONFIG.CATEGORIES || [], false);
+  // Upgrade to live list
+  Data.getCategories().then(cats => {
+    if (!cats || !cats.length) return;
+    populateCategoryOptions($("#browse-category"), cats, true, "Select a category…");
+    populateCategoryOptions($("#edit-category"), cats, false);
+  }).catch(() => { /* keep fallback */ });
   $("#browse-category").addEventListener("change", renderResults);
 
   // ---------- Image slot wiring (edit form) ------------------------------

@@ -130,6 +130,14 @@
   font-style: italic;
   letter-spacing: 0.05em;
 }
+.category-tile__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .category-tile__overlay {
   position: absolute;
   inset: 0;

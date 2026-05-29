@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delete Category — Quash Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+</head>
+<body>
+
+  <div class="shell">
+    <header class="admin-nav">
+      <div class="admin-nav__brand">
+        <span class="admin-nav__brand-name">QUASH</span>
+        <span class="admin-nav__tag">Admin</span>
+      </div>
+      <button class="admin-nav__logout" id="logout-btn">Sign Out</button>
+    </header>
+
+    <main class="admin-main">
+
+      <!-- ============== LIST VIEW ============== -->
+      <section id="view-list">
+        <a href="index.html" class="page-back">← Back</a>
+
+        <div class="page-head">
+          <h1>Delete Category</h1>
+          <p>Pick a category to remove. Categories with products attached cannot be deleted — deactivate them or move the products first.</p>
+        </div>
+
+        <div id="list-status" class="muted" style="font-size:.85rem;margin-bottom:.75rem;"></div>
+        <div class="result-list" id="cat-list"></div>
+        <div class="spinner is-hidden" id="loading-spinner"></div>
+      </section>
+
+      <!-- ============== CONFIRM VIEW ============== -->
+      <section id="view-confirm" class="is-hidden">
+        <button class="page-back" id="back-to-list" type="button">← Back to list</button>
+
+        <div class="page-head">
+          <h1 id="confirm-title">Delete this category?</h1>
+          <p id="confirm-subtitle" class="muted"></p>
+        </div>
+
+        <!-- Product count box -->
+        <div id="count-card" class="contact__card" style="margin-bottom:1.25rem;">
+          <h3 class="contact__card-title">Products in this category</h3>
+          <p class="contact__card-text" id="count-value">—</p>
+          <p class="contact__card-text contact__card-text--muted" id="count-hint"></p>
+        </div>
+
+        <!-- Safe option -->
+        <div id="action-deactivate" class="is-hidden">
+          <p class="muted" style="margin-bottom:.75rem;">Safer option: deactivate the category. It disappears from the public site but its products stay reachable by direct link, and the slug stays reserved.</p>
+          <button type="button" class="btn btn--ghost btn--block" id="btn-deactivate">Deactivate Category Instead</button>
+          <div class="divider-line"></div>
+        </div>
+
+        <!-- Delete confirmations -->
+        <div id="action-delete">
+          <label class="checkbox-row" id="confirm-checkbox-row">
+            <input type="checkbox" id="confirm-check" />
+            <span class="checkbox-row__text">
+              I understand this cannot be undone.
+              <small id="confirm-check-detail">The category row will be removed from the Sheet.</small>
+            </span>
+          </label>
+
+          <div class="save-bar">
+            <button type="button" class="btn btn--ghost" id="cancel-delete">Cancel</button>
+            <button type="submit" class="btn btn--danger" id="btn-delete" disabled>Delete</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/delete-category.js"></script>
+</body>
+</html>

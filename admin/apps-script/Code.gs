@@ -12,6 +12,7 @@
 // ===== CONFIG — fill these in before deploying ==========================
 const SHEET_ID        = "REPLACE_WITH_SHEET_ID";       // Spreadsheet ID (from its URL)
 const PRODUCTS_TAB    = "Products";                    // Tab name (must match)
+const CATEGORIES_TAB  = "Categories";                  // Tab name (must match)
 const DRIVE_FOLDER_ID = "REPLACE_WITH_FOLDER_ID";      // Drive folder for product images
 const API_SECRET      = "REPLACE_WITH_LONG_RANDOM_STRING"; // Shared secret with admin/js/config.js
 const CODE_PREFIX     = "QSH-";
@@ -33,12 +34,18 @@ function doPost(e) {
     }
 
     switch (payload.action) {
-      case "ping":          return json({ ok: true, pong: true });
-      case "nextCode":      return json({ ok: true, code: nextCode_() });
-      case "addProduct":    return json(addProduct_(payload));
-      case "updateProduct": return json(updateProduct_(payload));
-      case "uploadImage":   return json(uploadImage_(payload));
-      default:              return json({ ok: false, error: "unknown_action" });
+      case "ping":           return json({ ok: true, pong: true });
+      case "nextCode":       return json({ ok: true, code: nextCode_() });
+      case "addProduct":     return json(addProduct_(payload));
+      case "updateProduct":  return json(updateProduct_(payload));
+      case "uploadImage":    return json(uploadImage_(payload));
+      // Category actions
+      case "listCategories": return json(listCategories_());
+      case "addCategory":    return json(addCategory_(payload));
+      case "updateCategory": return json(updateCategory_(payload));
+      case "deleteCategory": return json(deleteCategory_(payload));
+      case "countCategoryProducts": return json(countCategoryProducts_(payload));
+      default:               return json({ ok: false, error: "unknown_action" });
     }
   } catch (err) {
     return json({ ok: false, error: String(err && err.message || err) });
@@ -154,10 +161,160 @@ function uploadImage_(p) {
   return { ok: true, url: url, driveId: file.getId() };
 }
 
+// ===== Category actions =================================================
+
+/** Read all category rows. Columns: slug | name | image | order | active */
+function listCategories_() {
+  const sheet = catSheet_();
+  if (!sheet) return { ok: false, error: "missing_categories_tab" };
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return { ok: true, categories: [] };
+
+  const values = sheet.getRange(2, 1, lastRow - 1, 5).getValues();
+  const categories = values
+    .filter(r => String(r[0] || "").trim() !== "")
+    .map(r => ({
+      slug:   String(r[0] || "").toLowerCase().trim(),
+      name:   String(r[1] || "").trim(),
+      image:  String(r[2] || "").trim(),
+      order:  Number(r[3]) || 0,
+      active: truthy_(r[4])
+    }))
+    .sort((a, b) => a.order - b.order);
+
+  return { ok: true, categories };
+}
+
+/** Append a new category. Slug auto-generated from name (server-side authority). */
+function addCategory_(p) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sheet = catSheet_();
+    if (!sheet) return { ok: false, error: "missing_categories_tab" };
+
+    const name = String(p.name || "").trim();
+    if (!name) return { ok: false, error: "missing_name" };
+    const slug = slugify_(name);
+    if (!slug) return { ok: false, error: "invalid_name" };
+
+    const lastRow = sheet.getLastRow();
+    let nextOrder = 1;
+    if (lastRow >= 2) {
+      const rows = sheet.getRange(2, 1, lastRow - 1, 4).getValues();
+      // Uniqueness on slug
+      for (let i = 0; i < rows.length; i++) {
+        if (String(rows[i][0] || "").toLowerCase().trim() === slug) {
+          return { ok: false, error: "duplicate_slug", slug };
+        }
+      }
+      const orders = rows.map(r => Number(r[3]) || 0);
+      if (orders.length) nextOrder = Math.max.apply(null, orders) + 1;
+    }
+
+    sheet.appendRow([slug, name, String(p.image || ""), nextOrder, "TRUE"]);
+    return { ok: true, slug, name };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Update name / image / active for an existing category. Slug is immutable. */
+function updateCategory_(p) {
+  const sheet = catSheet_();
+  if (!sheet) return { ok: false, error: "missing_categories_tab" };
+
+  const slug = String(p.slug || "").toLowerCase().trim();
+  if (!slug) return { ok: false, error: "missing_slug" };
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return { ok: false, error: "not_found" };
+
+  const slugs = sheet.getRange(2, 1, lastRow - 1, 1).getValues()
+    .map(r => String(r[0] || "").toLowerCase().trim());
+  const idx = slugs.indexOf(slug);
+  if (idx < 0) return { ok: false, error: "not_found" };
+  const rowNum = idx + 2;
+
+  const current = sheet.getRange(rowNum, 1, 1, 5).getValues()[0];
+  const next = [
+    current[0],                                                 // slug (never changes)
+    has(p, "name")   ? String(p.name)  : current[1],
+    has(p, "image")  ? String(p.image) : current[2],
+    has(p, "order")  ? Number(p.order) : current[3],
+    has(p, "active") ? (p.active ? "TRUE" : "FALSE") : current[4]
+  ];
+  sheet.getRange(rowNum, 1, 1, 5).setValues([next]);
+  return { ok: true, slug };
+}
+
+/**
+ * Delete a category permanently. By default, BLOCKS the delete if any
+ * products are tagged with that category — pass `force: true` to override.
+ */
+function deleteCategory_(p) {
+  const sheet = catSheet_();
+  if (!sheet) return { ok: false, error: "missing_categories_tab" };
+
+  const slug = String(p.slug || "").toLowerCase().trim();
+  if (!slug) return { ok: false, error: "missing_slug" };
+
+  const count = countCategoryProducts_({ slug }).count;
+  if (count > 0 && !p.force) {
+    return { ok: false, error: "has_products", count };
+  }
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return { ok: false, error: "not_found" };
+
+  const slugs = sheet.getRange(2, 1, lastRow - 1, 1).getValues()
+    .map(r => String(r[0] || "").toLowerCase().trim());
+  const idx = slugs.indexOf(slug);
+  if (idx < 0) return { ok: false, error: "not_found" };
+
+  sheet.deleteRow(idx + 2);
+  return { ok: true, slug, productsOrphaned: count };
+}
+
+/** Count products whose `category` column equals the given slug. */
+function countCategoryProducts_(p) {
+  const slug = String(p.slug || "").toLowerCase().trim();
+  if (!slug) return { ok: false, error: "missing_slug", count: 0 };
+
+  const prodSheet = sheet_();
+  const lastRow = prodSheet.getLastRow();
+  if (lastRow < 2) return { ok: true, count: 0 };
+
+  const cats = prodSheet.getRange(2, 3, lastRow - 1, 1).getValues();
+  let count = 0;
+  for (let i = 0; i < cats.length; i++) {
+    if (String(cats[i][0] || "").toLowerCase().trim() === slug) count++;
+  }
+  return { ok: true, count };
+}
+
 // ===== Helpers ==========================================================
 
 function sheet_() {
   return SpreadsheetApp.openById(SHEET_ID).getSheetByName(PRODUCTS_TAB);
+}
+
+function catSheet_() {
+  return SpreadsheetApp.openById(SHEET_ID).getSheetByName(CATEGORIES_TAB);
+}
+
+function slugify_(s) {
+  return String(s || "")
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function truthy_(v) {
+  const s = String(v == null ? "" : v).trim().toLowerCase();
+  return s === "true" || s === "yes" || s === "1" || s === "y";
 }
 
 function json(obj) {

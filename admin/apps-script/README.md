@@ -6,6 +6,30 @@ You only do this setup once. After that, the admin panel just works.
 
 ---
 
+## Step 0 — Add a Categories tab to your Sheet (required for category admin)
+
+The category admin features (Add / Edit / Delete) read and write a separate tab in your existing Sheet.
+
+1. Open your Quash Products Google Sheet.
+2. Add a new tab named exactly **`Categories`** (capital C).
+3. Add this header row (lowercase, exact spelling):
+   ```
+   slug | name | image | order | active
+   ```
+4. Copy your existing four categories in as data rows, e.g.:
+   ```
+   belly         | Belly         | https://...   | 1 | TRUE
+   flat-sandals  | Flat Sandals  | https://...   | 2 | TRUE
+   daily-wear    | Daily Wear    | https://...   | 3 | TRUE
+   party-wear    | Party Wear    | https://...   | 4 | TRUE
+   ```
+5. File → Share → **Publish to web** → select the `Categories` tab → format **CSV** → Publish. Copy the URL.
+6. Paste the URL into `js/config.js` as `SHEETS.CATEGORIES_CSV`.
+
+The `slug` column is the URL identifier (`category.html?cat=belly`). It must be lowercase, hyphenated, and **never changes** once a product is tagged with it.
+
+---
+
 ## Step 1 — Create a Drive folder for product images
 
 1. Open Google Drive.

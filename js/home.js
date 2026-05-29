@@ -33,11 +33,13 @@
   }
 
   function categoryTileHTML(cat) {
+    const bgInner = cat.image
+      ? `<img class="category-tile__img" src="${cat.image}" alt="" loading="lazy" decoding="async">`
+      : `<span class="category-tile__bg-letter">${escapeHTML(cat.name.charAt(0))}</span>`;
+
     return `
       <a href="category.html?cat=${encodeURIComponent(cat.slug)}" class="category-tile fade-in" aria-label="View ${escapeAttr(cat.name)}">
-        <div class="category-tile__bg">
-          <span class="category-tile__bg-letter">${escapeHTML(cat.name.charAt(0))}</span>
-        </div>
+        <div class="category-tile__bg">${bgInner}</div>
         <div class="category-tile__overlay"></div>
         <div class="category-tile__content">
           <div class="category-tile__name">${escapeHTML(cat.name)}</div>
@@ -81,10 +83,18 @@
     grid.innerHTML = featured.map(productCardHTML).join("");
   }
 
-  function renderCategories() {
+  async function renderCategories() {
     const grid = $("#categories-grid");
     if (!grid) return;
-    grid.innerHTML = CONFIG.CATEGORIES.map(categoryTileHTML).join("");
+    // First paint from the static fallback so the page isn't blank while
+    // the Sheet fetch resolves.
+    grid.innerHTML = (CONFIG.CATEGORIES || []).map(categoryTileHTML).join("");
+    try {
+      const cats = await Data.getCategories();
+      if (cats && cats.length) {
+        grid.innerHTML = cats.map(categoryTileHTML).join("");
+      }
+    } catch (err) { /* keep fallback render */ }
   }
 
   /* --------------------------- Hydrate: settings ----------------------- */

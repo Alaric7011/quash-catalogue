@@ -2,7 +2,10 @@ const CONFIG = {
   // -- Google Sheets (published CSV URLs) --------------------------------
   SHEETS: {
     PRODUCTS_CSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0aLhyvFgoKwm-9Ngwl1tK0rbZg4ROziljq1CP4_X-yXh5BJ7iHA7lmER-0aM70n6iBx7ubQpTzFdF/pub?gid=0&single=true&output=csv",
-    SETTINGS_CSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0aLhyvFgoKwm-9Ngwl1tK0rbZg4ROziljq1CP4_X-yXh5BJ7iHA7lmER-0aM70n6iBx7ubQpTzFdF/pub?gid=1189376026&single=true&output=csv"
+    SETTINGS_CSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0aLhyvFgoKwm-9Ngwl1tK0rbZg4ROziljq1CP4_X-yXh5BJ7iHA7lmER-0aM70n6iBx7ubQpTzFdF/pub?gid=1189376026&single=true&output=csv",
+    // Leave as empty string until you publish the Categories tab.
+    // When empty, the site uses the CATEGORIES array below as fallback.
+    CATEGORIES_CSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0aLhyvFgoKwm-9Ngwl1tK0rbZg4ROziljq1CP4_X-yXh5BJ7iHA7lmER-0aM70n6iBx7ubQpTzFdF/pub?gid=941870596&single=true&output=csv"
   },
 
   // -- Fallback values used if Settings sheet is unreachable -------------
@@ -20,13 +23,17 @@ const CONFIG = {
     instagram_url: ""
   },
 
-  // -- Categories (single source of truth for nav + category pages) ------
-  // Adding a future category is just: append a row + start tagging products.
+  // -- Categories (fallback only — admin manages categories via the Sheet)
+  // The CATEGORIES_CSV URL above is the live source. This list is used:
+  //   (a) before the network resolves, and
+  //   (b) if the Sheet fetch fails.
+  // Keep this in rough sync with what's in the Categories tab.
+  // `image` is OPTIONAL. Drop a file into assets/images/ and point to it.
   CATEGORIES: [
-    { slug: "belly",         name: "Belly" },
-    { slug: "flat-sandals",  name: "Flat Sandals" },
-    { slug: "daily-wear",    name: "Daily Wear" },
-    { slug: "party-wear",    name: "Party Wear" }
+    { slug: "belly",         name: "Belly",        image: "assets/images/cat-belly.png" },
+    { slug: "flat-sandals",  name: "Flat Sandals", image: "assets/images/cat-flat-sandals.png" },
+    { slug: "daily-wear",    name: "Daily Wear",   image: "assets/images/cat-daily-wear.png" },
+    { slug: "party-wear",    name: "Party Wear",   image: "assets/images/cat-party-wear.png" }
   ],
 
   // -- Paging / display behavior -----------------------------------------

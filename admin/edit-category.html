@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Category — Quash Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+</head>
+<body>
+
+  <div class="shell">
+    <header class="admin-nav">
+      <div class="admin-nav__brand">
+        <span class="admin-nav__brand-name">QUASH</span>
+        <span class="admin-nav__tag">Admin</span>
+      </div>
+      <button class="admin-nav__logout" id="logout-btn">Sign Out</button>
+    </header>
+
+    <main class="admin-main">
+
+      <!-- ============== LIST VIEW ============== -->
+      <section id="view-list">
+        <a href="index.html" class="page-back">← Back</a>
+
+        <div class="page-head">
+          <h1>Edit Category</h1>
+          <p>Pick a category to update. Slugs cannot be renamed — only the name, image and active status.</p>
+        </div>
+
+        <div id="list-status" class="muted" style="font-size:.85rem;margin-bottom:.75rem;"></div>
+        <div class="result-list" id="cat-list"></div>
+        <div class="spinner is-hidden" id="loading-spinner"></div>
+      </section>
+
+      <!-- ============== EDIT VIEW ============== -->
+      <section id="view-edit" class="is-hidden">
+        <button class="page-back" id="back-to-list" type="button">← Back to list</button>
+
+        <div class="page-head">
+          <h1 id="edit-title">Edit Category</h1>
+          <p class="muted">The slug below is permanent — change name and image freely.</p>
+        </div>
+
+        <form class="form" id="edit-cat-form" autocomplete="off" novalidate>
+
+          <div class="field">
+            <span class="field__label">Slug</span>
+            <div class="code-preview" id="edit-slug">—</div>
+            <div class="field__hint">Permanent. Used in product tags and URLs.</div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="edit-cat-name">Category Name <span class="req">*</span></label>
+            <input type="text" id="edit-cat-name" class="input" required maxlength="60" />
+          </div>
+
+          <div class="field image-field">
+            <span class="field__label">Category Image</span>
+            <div class="image-drop" id="edit-cat-drop">
+              <input type="file" accept="image/*" id="edit-cat-file" />
+              <div class="image-drop__hint">
+                <strong>Tap to replace</strong><br>
+                <span class="muted">leave blank to keep current</span>
+              </div>
+            </div>
+          </div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="edit-cat-active" />
+            <span class="checkbox-row__text">
+              Active on website
+              <small>Uncheck to hide this category (its products stay reachable by direct link).</small>
+            </span>
+          </label>
+
+          <div class="save-bar">
+            <button type="button" class="btn btn--ghost" id="cancel-edit">Cancel</button>
+            <button type="submit" class="btn btn--primary" id="save-edit">Save Changes</button>
+          </div>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/edit-category.js"></script>
+</body>
+</html>

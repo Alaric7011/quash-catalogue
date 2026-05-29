@@ -50,17 +50,27 @@
     return h;
   }
 
-  function renderHeader(slug) {
-    const cat = CONFIG.CATEGORIES.find(c => c.slug === slug);
-    const name = cat ? cat.name : "Collection";
+  async function renderHeader(slug) {
+    // Synchronous first paint from static fallback
+    let cat = (CONFIG.CATEGORIES || []).find(c => c.slug === slug);
+    let name = cat ? cat.name : slug;
+    paint(name);
 
-    const title = $("#cat-title");
-    const crumb = $("#crumb-current");
-    const docTitle = $("#page-title");
+    // Then upgrade from the live Sheet if available
+    try {
+      const cats = await Data.getCategories();
+      const live = (cats || []).find(c => c.slug === slug);
+      if (live && live.name) paint(live.name);
+    } catch {}
 
-    if (title) title.textContent = name;
-    if (crumb) crumb.textContent = name;
-    if (docTitle) docTitle.textContent = `${name} — Quash`;
+    function paint(n) {
+      const title = $("#cat-title");
+      const crumb = $("#crumb-current");
+      const docTitle = $("#page-title");
+      if (title) title.textContent = n;
+      if (crumb) crumb.textContent = n;
+      if (docTitle) docTitle.textContent = `${n} — Quash`;
+    }
   }
 
   function renderNextPage() {
@@ -178,8 +188,15 @@
     hydrateSettings();
 
     const slug = (getParam("cat") || "").toLowerCase().trim();
-    if (!slug || !CONFIG.CATEGORIES.find(c => c.slug === slug)) {
-      // Unknown category — redirect home
+    if (!slug) {
+      window.location.replace("index.html#collections");
+      return;
+    }
+    // Validate against both static fallback AND the live Sheet categories.
+    const liveCats = await Data.getCategories().catch(() => []);
+    const inStatic = (CONFIG.CATEGORIES || []).some(c => c.slug === slug);
+    const inLive   = (liveCats || []).some(c => c.slug === slug);
+    if (!inStatic && !inLive) {
       window.location.replace("index.html#collections");
       return;
     }

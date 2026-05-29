@@ -45,10 +45,17 @@ const AdminAPI = (() => {
     return data;
   }
 
-  async function ping()          { return post({ action: "ping" }); }
-  async function nextCode()      { return post({ action: "nextCode" }); }
-  async function addProduct(p)   { return post(Object.assign({ action: "addProduct" }, p)); }
-  async function updateProduct(p){ return post(Object.assign({ action: "updateProduct" }, p)); }
+  async function ping()           { return post({ action: "ping" }); }
+  async function nextCode()       { return post({ action: "nextCode" }); }
+  async function addProduct(p)    { return post(Object.assign({ action: "addProduct" }, p)); }
+  async function updateProduct(p) { return post(Object.assign({ action: "updateProduct" }, p)); }
+  async function listCategories() { return post({ action: "listCategories" }); }
+  async function addCategory(p)   { return post(Object.assign({ action: "addCategory" }, p)); }
+  async function updateCategory(p){ return post(Object.assign({ action: "updateCategory" }, p)); }
+  async function deleteCategory(p){ return post(Object.assign({ action: "deleteCategory" }, p)); }
+  async function countCategoryProducts(slug) {
+    return post({ action: "countCategoryProducts", slug: slug });
+  }
 
   /**
    * Compress + resize a chosen image before upload to keep payloads small.
@@ -84,5 +91,8 @@ const AdminAPI = (() => {
     return post({ action: "uploadImage", dataUrl, filename: safeName });
   }
 
-  return { ping, nextCode, addProduct, updateProduct, uploadImage, compressImage };
+  return {
+    ping, nextCode, addProduct, updateProduct, uploadImage, compressImage,
+    listCategories, addCategory, updateCategory, deleteCategory, countCategoryProducts
+  };
 })();

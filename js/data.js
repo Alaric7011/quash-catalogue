@@ -115,6 +115,7 @@ const Data = (() => {
   // Cache for the duration of the page load (re-fetched on full reload).
   let _productsPromise = null;
   let _settingsPromise = null;
+  let _categoriesPromise = null;
 
   async function getProducts() {
     if (!_productsPromise) {
@@ -129,6 +130,41 @@ const Data = (() => {
         });
     }
     return _productsPromise;
+  }
+
+  async function getCategories() {
+    if (!_categoriesPromise) {
+      const url = (CONFIG.SHEETS && CONFIG.SHEETS.CATEGORIES_CSV) || "";
+      // If the Categories tab hasn't been published yet, use the config fallback.
+      if (!url || /REPLACE_WITH/i.test(url)) {
+        _categoriesPromise = Promise.resolve(
+          (CONFIG.CATEGORIES || []).map(c => ({
+            slug: c.slug, name: c.name, image: c.image || "", order: 0, active: true
+          }))
+        );
+      } else {
+        _categoriesPromise = fetchCSV(url)
+          .then(rows => rows
+            .filter(r => (r.slug || "").trim())
+            .map(r => ({
+              slug:   (r.slug  || "").toLowerCase().trim(),
+              name:   r.name   || "",
+              image:  r.image  || "",
+              order:  Number(r.order) || 0,
+              active: truthy(r.active)
+            }))
+            .filter(c => c.active)
+            .sort((a, b) => a.order - b.order)
+          )
+          .catch(err => {
+            console.warn("[Quash] Could not load categories, using fallback:", err);
+            return (CONFIG.CATEGORIES || []).map(c => ({
+              slug: c.slug, name: c.name, image: c.image || "", order: 0, active: true
+            }));
+          });
+      }
+    }
+    return _categoriesPromise;
   }
 
   async function getSettings() {
@@ -202,6 +238,7 @@ const Data = (() => {
     // queries
     getProducts,
     getSettings,
+    getCategories,
     getProductByCode,
     getProductsByCategory,
     getFeatured,
