@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const { $, $$, toast, setBusy } = AdminUI;
+  const { $, setBusy } = AdminUI;
 
   const viewLogin     = $("#view-login");
   const viewDashboard = $("#view-dashboard");
@@ -50,13 +50,6 @@
 
   // Logout
   $("#logout-btn").addEventListener("click", () => Auth.logout());
-
-  // Category stubs (visual only)
-  $$('[data-stub]').forEach(btn => {
-    btn.addEventListener("click", () => {
-      toast(btn.dataset.stub + " — coming soon.", "info");
-    });
-  });
 
   // Helper: dev-only — log a SHA-256 hash for any password the owner wants.
   // Open the console and call:    quashHash("my-password")
